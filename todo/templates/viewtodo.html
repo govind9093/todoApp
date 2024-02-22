@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <title>Todo Web Application</title>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f8f9fa; /* Light Gray */
+        }
+        .navbar {
+            background-color: #343a40; /* Dark Gray */
+        }
+        .navbar-brand {
+            color: #fff;
+            font-weight: bold;
+        }
+        .nav-link {
+            color: #fff;
+            font-weight: bold;
+        }
+        .btn-start {
+            background-color: #28a745; /* Green */
+            border-color: #28a745; /* Green */
+        }
+        .btn-start:hover {
+            background-color: #218838; /* Darker Green */
+            border-color: #1e7e34; /* Darker Green */
+        }
+        footer {
+            background-color: #343a40; /* Dark Gray */
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .auth-links {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-md navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">Todo Web Application</a>
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item {% if current == 'current' %} active {% endif %}">
+                <a class="nav-link" href="{% url 'currenttodos' %}">Current</a>
+            </li>
+            <li class="nav-item {% if completed == 'completed' %} active {% endif %}">
+                <a class="nav-link" href="{% url 'completedtodos' %}">Completed</a>
+            </li>
+            <li class="nav-item {% if create == 'create' %} active {% endif %}">
+                <a class="nav-link" href="{% url 'createtodo' %}">Create</a>
+            </li>
+        </ul>
+        <li class="nav-item">
+            <a href="#" onclick="$('#signOutBtn').click()" class="nav-link">Logout</a>
+            <form style='display: none;' method="POST" action="{% url 'logoutuser' %}">
+                {% csrf_token %}
+                <button id="signOutBtn" type="submit" class="btn btn-primary"><b style="color:navy">Logout</b></button>
+            </form>
+        </li>
+    </div>
+</nav>
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5">
+            {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endif %}
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <input type="text" name="title" class="form-control" id="title" value="{{ todo.title }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="memo">Memo</label>
+                    <textarea name="memo" rows="5" class="form-control" id="memo" >{{ todo.memo }}</textarea>
+                </div>
+                <div class="form-group form-check">
+                    <input type="checkbox" name="important" class="form-check-input" id="important" {% if todo.important %}checked{% endif %}>
+                    <label class="form-check-label" for="important">Important</label>
+                </div>
+                <button type="submit" class="btn btn-dark">Update</button>
+                <button type="button" class="btn btn-success" onclick="$('#complete').click()">Complete</button>
+                <button type="button" class="btn btn-danger" onclick="$('#delete').click()">Delete</button>
+            </form>
+        </div>
+    </div>
+    {% if todo.datecompleted is None %}
+        <form style='display: none;' method="POST" action="{% url 'completetodos' todo.id %}">
+            {% csrf_token %}
+            <button id="complete" type="submit">Complete</button>
+        </form>
+    {% endif %}
+    <form style='display: none;' method="POST" action="{% url 'deletetodos' todo.id %}">
+        {% csrf_token %}
+        <button id="delete" type="submit">Delete</button>
+    </form>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>
+
